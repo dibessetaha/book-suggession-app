@@ -1,4 +1,4 @@
 package models;
 
-public class Preference {
+public class ReadingHistory {
 }

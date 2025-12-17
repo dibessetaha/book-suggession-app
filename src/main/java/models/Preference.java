@@ -1,4 +1,4 @@
 package models;
 
-public class User {
+public class Preference {
 }
