@@ -1,9 +1,10 @@
 package net.cesi.minipro.booksuggestionapp.models;
 
-
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -19,20 +20,20 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "google_book_id", unique = true, nullable = false, length = 50)
+    @Column(name = "google_book_id", unique = true, nullable = false)
     private String googleBookId;
 
     @Column(nullable = false, length = 500)
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String authors; // JSON: ["Author1", "Author2"]
+    private String authors;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(columnDefinition = "TEXT")
-    private String categories; // JSON: ["Fiction", "Fantasy"]
+    private String categories;
 
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
@@ -40,16 +41,19 @@ public class Book {
     @Column(name = "average_rating")
     private Double averageRating;
 
-    @Column(name = "published_date", length = 20)
+    @Column(name = "published_date")
     private String publishedDate;
 
     @Column(name = "page_count")
     private Integer pageCount;
 
-    @Column(length = 10)
     private String language;
 
-    @CreationTimestamp
-    @Column(name = "cached_at", updatable = false)
+    @Column(name = "cached_at")
     private LocalDateTime cachedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        cachedAt = LocalDateTime.now();
+    }
 }

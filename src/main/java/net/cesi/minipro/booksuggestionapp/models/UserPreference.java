@@ -28,5 +28,7 @@ public class UserPreference {
 
     @Column(name = "preference_value", nullable = false, length = 100)
     private String preferenceValue;
+
+
 }
 
