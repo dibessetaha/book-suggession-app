@@ -11,10 +11,10 @@ const PreferencesModal = ({ userId, currentProfile, onClose, onUpdate }) => {
     const [error, setError] = useState('');
 
     const genreOptions = [
-        'Fantasy', 'Science Fiction', 'Mystery', 'Thriller', 
-        'Romance', 'Historical Fiction', 'Horror', 'Adventure',
-        'Biography', 'Self-Help', 'Business', 'Philosophy', 
-        'Poetry', 'Drama', 'Comedy', 'Action'
+        'Business', 'Self-Help', 'Science Fiction', 'Fantasy', 
+        'Mystery', 'Thriller', 'Romance', 'Horror', 
+        'Biography', 'History', 'Philosophy', 'Poetry',
+        'Adventure', 'Drama', 'Comedy'
     ];
 
     useEffect(() => {
@@ -51,7 +51,7 @@ const PreferencesModal = ({ userId, currentProfile, onClose, onUpdate }) => {
         setError('');
 
         if (genres.length === 0) {
-            setError('Veuillez sélectionner au moins un genre');
+            setError('Please select at least one genre');
             return;
         }
 
@@ -64,64 +64,105 @@ const PreferencesModal = ({ userId, currentProfile, onClose, onUpdate }) => {
             });
             onUpdate();
         } catch (err) {
-            setError('Erreur lors de la mise à jour des préférences');
+            setError('Error updating preferences');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="preferences-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>⚙️ Modifier mes préférences</h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+        <div className="modal-overlay-pro" onClick={onClose}>
+            <div className="modal-content-pro" onClick={(e) => e.stopPropagation()}>
+                {/* Header */}
+                <div className="modal-header-pro">
+                    <div className="modal-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M12 1v6m0 6v6M23 12h-6m-6 0H1" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <h2>Edit Preferences</h2>
+                    </div>
+                    <button className="modal-close-pro" onClick={onClose}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                    </button>
                 </div>
 
-                {error && <div className="error-message">{error}</div>}
+                {/* Error Message */}
+                {error && (
+                    <div className="error-message-modal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        {error}
+                    </div>
+                )}
 
-                <form onSubmit={handleSubmit} className="preferences-form">
-                    <div className="preferences-section">
-                        <h3>📖 Genres préférés *</h3>
-                        <div className="add-preference">
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="modal-form-pro">
+                    {/* Genres Section */}
+                    <div className="form-section-pro">
+                        <label className="section-label-pro">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" strokeWidth="2"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="2"/>
+                            </svg>
+                            Favorite Genres *
+                        </label>
+                        
+                        <div className="input-group-pro">
                             <select 
                                 value={currentGenre}
                                 onChange={(e) => setCurrentGenre(e.target.value)}
+                                className="select-pro"
                             >
-                                <option value="">Sélectionner un genre</option>
+                                <option value="">Select a genre</option>
                                 {genreOptions.map(genre => (
-                                    <option key={genre} value={genre}>
-                                        {genre}
-                                    </option>
+                                    <option key={genre} value={genre}>{genre}</option>
                                 ))}
                             </select>
-                            <button type="button" onClick={addGenre} className="btn-add">
-                                Ajouter
+                            <button type="button" onClick={addGenre} className="btn-add-modal">
+                                Add
                             </button>
                         </div>
-                        <div className="tags">
-                            {genres.map(genre => (
-                                <span key={genre} className="tag">
-                                    {genre}
-                                    <button type="button" onClick={() => removeGenre(genre)}>
-                                        ×
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                        {genres.length === 0 && (
-                            <p className="hint">Ajoutez au moins un genre</p>
+
+                        {genres.length > 0 ? (
+                            <div className="tags-container-pro">
+                                {genres.map(genre => (
+                                    <span key={genre} className="tag-pro">
+                                        {genre}
+                                        <button type="button" onClick={() => removeGenre(genre)}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2"/>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-hint">No genres selected yet</div>
                         )}
                     </div>
 
-                    <div className="preferences-section">
-                        <h3>✍️ Auteurs préférés</h3>
-                        <div className="add-preference">
+                    {/* Authors Section */}
+                    <div className="form-section-pro">
+                        <label className="section-label-pro">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+                                <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                            </svg>
+                            Favorite Authors
+                        </label>
+                        
+                        <div className="input-group-pro">
                             <input
                                 type="text"
                                 value={currentAuthor}
                                 onChange={(e) => setCurrentAuthor(e.target.value)}
-                                placeholder="Nom de l'auteur"
+                                placeholder="Enter author name"
+                                className="input-pro"
                                 onKeyPress={(e) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault();
@@ -129,28 +170,36 @@ const PreferencesModal = ({ userId, currentProfile, onClose, onUpdate }) => {
                                     }
                                 }}
                             />
-                            <button type="button" onClick={addAuthor} className="btn-add">
-                                Ajouter
+                            <button type="button" onClick={addAuthor} className="btn-add-modal">
+                                Add
                             </button>
                         </div>
-                        <div className="tags">
-                            {authors.map(author => (
-                                <span key={author} className="tag">
-                                    {author}
-                                    <button type="button" onClick={() => removeAuthor(author)}>
-                                        ×
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
+
+                        {authors.length > 0 ? (
+                            <div className="tags-container-pro">
+                                {authors.map(author => (
+                                    <span key={author} className="tag-pro">
+                                        {author}
+                                        <button type="button" onClick={() => removeAuthor(author)}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2"/>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-hint">Optional - Add your favorite authors</div>
+                        )}
                     </div>
 
-                    <div className="modal-actions">
-                        <button type="button" onClick={onClose} className="btn-cancel">
-                            Annuler
+                    {/* Actions */}
+                    <div className="modal-actions-pro">
+                        <button type="button" onClick={onClose} className="btn-cancel-modal">
+                            Cancel
                         </button>
-                        <button type="submit" className="btn-save" disabled={loading}>
-                            {loading ? 'Enregistrement...' : 'Enregistrer'}
+                        <button type="submit" className="btn-save-modal" disabled={loading}>
+                            {loading ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </form>

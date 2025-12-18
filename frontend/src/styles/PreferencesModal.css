@@ -1,216 +1,291 @@
-.preferences-modal {
+.modal-overlay-pro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content-pro {
     background: white;
-    border-radius: 20px;
+    border-radius: 12px;
     max-width: 600px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     animation: slideUp 0.3s ease;
 }
 
-.modal-header {
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header-pro {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px 30px 20px;
-    border-bottom: 2px solid #f0f2f5;
+    padding: 24px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.modal-header h2 {
-    color: #333;
-    font-size: 1.8em;
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-title svg {
+    color: #2563eb;
+}
+
+.modal-title h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
     margin: 0;
 }
 
-.preferences-form {
-    padding: 30px;
+.modal-close-pro {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
 }
 
-.preferences-form .preferences-section {
-    margin-bottom: 30px;
-    padding: 25px;
-    background: #f8f9fa;
-    border-radius: 15px;
+.modal-close-pro:hover {
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
-.preferences-form .preferences-section:last-of-type {
+.error-message-modal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 24px 0;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.modal-form-pro {
+    padding: 24px;
+}
+
+.form-section-pro {
+    margin-bottom: 32px;
+}
+
+.form-section-pro:last-of-type {
     margin-bottom: 0;
 }
 
-.preferences-form .preferences-section h3 {
-    margin: 0 0 15px 0;
-    color: #333;
-    font-size: 1.2em;
-}
-
-.preferences-form .add-preference {
+.section-label-pro {
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 12px;
 }
 
-.preferences-form .add-preference input,
-.preferences-form .add-preference select {
+.section-label-pro svg {
+    color: #64748b;
+}
+
+.input-group-pro {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.select-pro,
+.input-pro {
     flex: 1;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1em;
-    transition: border-color 0.3s;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    background: white;
+    transition: all 0.2s;
 }
 
-.preferences-form .add-preference input:focus,
-.preferences-form .add-preference select:focus {
+.select-pro:focus,
+.input-pro:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.preferences-form .btn-add {
-    padding: 12px 24px;
-    background: #667eea;
+.btn-add-modal {
+    padding: 10px 20px;
+    background: #2563eb;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
+    transition: all 0.2s;
     white-space: nowrap;
 }
 
-.preferences-form .btn-add:hover {
-    background: #5568d3;
+.btn-add-modal:hover {
+    background: #1e40af;
 }
 
-.preferences-form .tags {
+.tags-container-pro {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    min-height: 40px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    min-height: 60px;
 }
 
-.preferences-form .tag {
+.tag-pro {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 15px;
-    background: #667eea;
-    color: white;
-    border-radius: 20px;
-    font-size: 0.95em;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #1e293b;
     font-weight: 500;
 }
 
-.preferences-form .tag button {
+.tag-pro button {
     background: none;
     border: none;
-    color: white;
-    font-size: 1.4em;
+    color: #64748b;
     cursor: pointer;
     padding: 0;
-    line-height: 1;
-    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
 }
 
-.preferences-form .tag button:hover {
-    transform: scale(1.2);
+.tag-pro button:hover {
+    color: #dc2626;
 }
 
-.hint {
-    color: #999;
-    font-size: 0.9em;
-    font-style: italic;
-    margin-top: 8px;
+.empty-hint {
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 13px;
+    text-align: center;
 }
 
-.modal-actions {
+.modal-actions-pro {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    padding: 20px 30px 30px;
-    border-top: 2px solid #f0f2f5;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
 }
 
-.btn-cancel {
-    padding: 12px 30px;
-    background: #f0f2f5;
-    color: #666;
-    border: none;
-    border-radius: 10px;
-    font-size: 1em;
-    font-weight: 600;
+.btn-cancel-modal {
+    padding: 10px 20px;
+    background: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
-.btn-cancel:hover {
-    background: #e0e2e5;
+.btn-cancel-modal:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
 }
 
-.btn-save {
-    padding: 12px 30px;
-    background: #667eea;
+.btn-save-modal {
+    padding: 10px 24px;
+    background: #2563eb;
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 1em;
-    font-weight: 600;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
-.btn-save:hover:not(:disabled) {
-    background: #5568d3;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+.btn-save-modal:hover:not(:disabled) {
+    background: #1e40af;
 }
 
-.btn-save:disabled {
-    opacity: 0.6;
+.btn-save-modal:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-.error-message {
-    background: #fee;
-    color: #c33;
-    padding: 12px;
-    border-radius: 8px;
-    margin: 0 30px 20px;
-    border-left: 4px solid #c33;
-}
-
-@media (max-width: 768px) {
-    .preferences-modal {
-        margin: 10px;
-        max-height: 95vh;
+@media (max-width: 640px) {
+    .modal-content-pro {
+        margin: 0;
+        max-height: 100vh;
+        border-radius: 0;
     }
 
-    .modal-header {
+    .modal-header-pro,
+    .modal-form-pro {
         padding: 20px;
     }
 
-    .modal-header h2 {
-        font-size: 1.5em;
-    }
-
-    .preferences-form {
-        padding: 20px;
-    }
-
-    .preferences-form .add-preference {
+    .input-group-pro {
         flex-direction: column;
     }
 
-    .preferences-form .btn-add {
+    .btn-add-modal {
         width: 100%;
     }
 
-    .modal-actions {
-        flex-direction: column;
-        padding: 15px 20px 20px;
+    .modal-actions-pro {
+        flex-direction: column-reverse;
     }
 
-    .btn-cancel,
-    .btn-save {
+    .btn-cancel-modal,
+    .btn-save-modal {
         width: 100%;
     }
 }
