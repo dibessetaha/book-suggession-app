@@ -1,0 +1,216 @@
+.preferences-modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 30px 20px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.modal-header h2 {
+    color: #333;
+    font-size: 1.8em;
+    margin: 0;
+}
+
+.preferences-form {
+    padding: 30px;
+}
+
+.preferences-form .preferences-section {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.preferences-form .preferences-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.preferences-form .preferences-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.preferences-form .add-preference {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.preferences-form .add-preference input,
+.preferences-form .add-preference select {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.preferences-form .add-preference input:focus,
+.preferences-form .add-preference select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.preferences-form .btn-add {
+    padding: 12px 24px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.preferences-form .btn-add:hover {
+    background: #5568d3;
+}
+
+.preferences-form .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+}
+
+.preferences-form .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: #667eea;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+.preferences-form .tag button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.4em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.preferences-form .tag button:hover {
+    transform: scale(1.2);
+}
+
+.hint {
+    color: #999;
+    font-size: 0.9em;
+    font-style: italic;
+    margin-top: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 20px 30px 30px;
+    border-top: 2px solid #f0f2f5;
+}
+
+.btn-cancel {
+    padding: 12px 30px;
+    background: #f0f2f5;
+    color: #666;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+    background: #e0e2e5;
+}
+
+.btn-save {
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-save:hover:not(:disabled) {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0 30px 20px;
+    border-left: 4px solid #c33;
+}
+
+@media (max-width: 768px) {
+    .preferences-modal {
+        margin: 10px;
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.5em;
+    }
+
+    .preferences-form {
+        padding: 20px;
+    }
+
+    .preferences-form .add-preference {
+        flex-direction: column;
+    }
+
+    .preferences-form .btn-add {
+        width: 100%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        padding: 15px 20px 20px;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+}

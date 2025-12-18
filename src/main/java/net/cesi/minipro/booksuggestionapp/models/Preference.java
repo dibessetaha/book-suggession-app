@@ -1,15 +1,11 @@
 package net.cesi.minipro.booksuggestionapp.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import net.cesi.minipro.booksuggestionapp.enums.PreferenceType;
 
 @Entity
 @Table(name = "user_preferences")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,4 +24,37 @@ public class Preference {
 
     @Column(name = "preference_value", nullable = false)
     private String preferenceValue;
+
+    // Getters et Setters manuels
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public PreferenceType getPreferenceType() {
+        return preferenceType;
+    }
+
+    public void setPreferenceType(PreferenceType preferenceType) {
+        this.preferenceType = preferenceType;
+    }
+
+    public String getPreferenceValue() {
+        return preferenceValue;
+    }
+
+    public void setPreferenceValue(String preferenceValue) {
+        this.preferenceValue = preferenceValue;
+    }
 }

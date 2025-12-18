@@ -1,0 +1,339 @@
+.book-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.book-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.book-cover {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+}
+
+.no-cover span {
+    font-size: 4em;
+    margin-bottom: 10px;
+}
+
+.no-cover p {
+    font-size: 1em;
+    opacity: 0.9;
+}
+
+.score-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #667eea;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.book-info {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-title {
+    color: #333;
+    font-size: 1.2em;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    line-height: 1.4;
+    min-height: 2.8em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-authors {
+    color: #667eea;
+    font-size: 0.95em;
+    margin: 0 0 10px 0;
+    font-weight: 500;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.rating-value {
+    color: #666;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f0f2f5;
+    color: #667eea;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.book-description {
+    color: #666;
+    font-size: 0.9em;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.btn-details {
+    width: 100%;
+    padding: 10px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-details:hover {
+    background: #5568d3;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    z-index: 1;
+}
+
+.modal-close:hover {
+    background: #f5f5f5;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    padding: 40px;
+}
+
+.modal-cover {
+    position: sticky;
+    top: 40px;
+}
+
+.modal-cover img {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.no-cover-large {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 6em;
+}
+
+.modal-info {
+    padding-right: 20px;
+}
+
+.modal-info h2 {
+    color: #333;
+    font-size: 2em;
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+}
+
+.modal-authors {
+    color: #667eea;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+
+.modal-rating {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.modal-categories {
+    margin-bottom: 20px;
+}
+
+.modal-categories strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.modal-info p {
+    color: #666;
+    margin-bottom: 12px;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.modal-description {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f2f5;
+}
+
+.modal-description strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.modal-description p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1em;
+}
+
+@media (max-width: 768px) {
+    .modal-body {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .modal-cover {
+        position: relative;
+        top: 0;
+    }
+
+    .modal-cover img,
+    .no-cover-large {
+        max-width: 250px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .no-cover-large {
+        height: 320px;
+    }
+
+    .modal-info {
+        padding-right: 0;
+    }
+
+    .modal-info h2 {
+        font-size: 1.5em;
+    }
+}

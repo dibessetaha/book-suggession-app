@@ -19,7 +19,6 @@ public class UserProfileDTO {
     private String email;
     private List<String> favoriteGenres;
     private List<String> favoriteAuthors;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 }

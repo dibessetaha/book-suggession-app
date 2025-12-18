@@ -1,10 +1,10 @@
 package net.cesi.minipro.booksuggestionapp.service;
 
-import lombok.extern.slf4j.Slf4j;
 import net.cesi.minipro.booksuggestionapp.dto.BookDTO;
 import net.cesi.minipro.booksuggestionapp.models.Book;
 import net.cesi.minipro.booksuggestionapp.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,16 +17,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class GoogleBooksApiService {
 
-    @Value("${google.books.api.url}")
-    private String apiBaseUrl;
+    private static final Logger log = LoggerFactory.getLogger(GoogleBooksApiService.class);
+
+    private String apiBaseUrl ="https://www.googleapis.com/books/v1/volumes";
 
     private final RestTemplate restTemplate;
     private final BookRepository bookRepository;
 
-    @Autowired
     public GoogleBooksApiService(BookRepository bookRepository) {
         this.restTemplate = new RestTemplate();
         this.bookRepository = bookRepository;

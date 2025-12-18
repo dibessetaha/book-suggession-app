@@ -1,0 +1,273 @@
+.home-page {
+    min-height: 100vh;
+    background: #f5f7fa;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.username {
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.btn-logout {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #667eea;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.hero-section h2 {
+    color: #333;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.hero-section > p {
+    color: #666;
+    font-size: 1.1em;
+    margin-bottom: 30px;
+}
+
+.current-preferences {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 15px;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.pref-group {
+    margin-bottom: 20px;
+}
+
+.pref-group:last-child {
+    margin-bottom: 0;
+}
+
+.pref-group strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.pref-group .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tags .tag {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #667eea;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    padding: 14px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    padding: 14px 30px;
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #667eea;
+    color: white;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+.books-section {
+    margin-top: 40px;
+}
+
+.books-section h3 {
+    color: #333;
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.no-recommendations {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.no-recommendations h3 {
+    color: #333;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+.no-recommendations p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+@media (max-width: 1200px) {
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-content {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .navbar h1 {
+        font-size: 1.5em;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .hero-section {
+        padding: 30px 20px;
+    }
+
+    .hero-section h2 {
+        font-size: 1.8em;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    .books-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

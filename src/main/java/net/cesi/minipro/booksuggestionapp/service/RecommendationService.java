@@ -1,84 +1,88 @@
 package net.cesi.minipro.booksuggestionapp.service;
 
-import lombok.extern.slf4j.Slf4j;
 import net.cesi.minipro.booksuggestionapp.dto.BookDTO;
 import net.cesi.minipro.booksuggestionapp.enums.PreferenceType;
 import net.cesi.minipro.booksuggestionapp.models.Preference;
-import net.cesi.minipro.booksuggestionapp.models.ReadingHistory;
 import net.cesi.minipro.booksuggestionapp.repository.PreferenceRepository;
-import net.cesi.minipro.booksuggestionapp.repository.ReadingHistoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class RecommendationService {
+
+    private static final Logger log = LoggerFactory.getLogger(RecommendationService.class);
 
     private final GoogleBooksApiService googleBooksService;
     private final PreferenceRepository preferenceRepository;
-    private final ReadingHistoryRepository readingHistoryRepository;
 
     @Autowired
     public RecommendationService(
             GoogleBooksApiService googleBooksService,
-            PreferenceRepository preferenceRepository,
-            ReadingHistoryRepository readingHistoryRepository) {
+            PreferenceRepository preferenceRepository) {
         this.googleBooksService = googleBooksService;
         this.preferenceRepository = preferenceRepository;
-        this.readingHistoryRepository = readingHistoryRepository;
     }
 
     public List<BookDTO> getRecommendations(Long userId, int limit) {
-        // 1. Récupérer les préférences de l'utilisateur
+        log.info("Getting recommendations for user: {}", userId);
+
+        // 1. Récupérer les préférences
         List<Preference> preferences = preferenceRepository.findByUserId(userId);
 
         if (preferences.isEmpty()) {
-            // Si pas de préférences, retourner des livres populaires
+            log.warn("No preferences found for user {}, returning bestsellers", userId);
             return googleBooksService.searchBooks("bestseller", limit);
         }
 
-        // 2. Récupérer les livres déjà lus
-        List<ReadingHistory> history = readingHistoryRepository.findByUserId(userId);
-        Set<String> readBooksIds = history.stream()
-                .map(h -> h.getBook().getGoogleBookId())
-                .collect(Collectors.toSet());
+        log.info("Found {} preferences for user {}", preferences.size(), userId);
 
-        // 3. Chercher des livres basés sur les préférences
-        List<BookDTO> candidateBooks = new ArrayList<>();
-
-        // Par genre
-        preferences.stream()
+        // 2. Séparer genres et auteurs
+        List<String> favoriteGenres = preferences.stream()
                 .filter(p -> p.getPreferenceType() == PreferenceType.GENRE)
-                .forEach(p -> {
-                    List<BookDTO> books = googleBooksService.searchByGenre(
-                            p.getPreferenceValue(), 20);
-                    candidateBooks.addAll(books);
-                });
+                .map(Preference::getPreferenceValue)
+                .collect(Collectors.toList());
 
-        // Par auteur
-        preferences.stream()
+        List<String> favoriteAuthors = preferences.stream()
                 .filter(p -> p.getPreferenceType() == PreferenceType.AUTHOR)
-                .forEach(p -> {
-                    List<BookDTO> books = googleBooksService.searchByAuthor(
-                            p.getPreferenceValue(), 20);
-                    candidateBooks.addAll(books);
-                });
+                .map(Preference::getPreferenceValue)
+                .collect(Collectors.toList());
 
-        // 4. Calculer le score et filtrer
+        log.info("Genres: {}, Authors: {}", favoriteGenres, favoriteAuthors);
+
+        // 3. Chercher des livres
+        Set<BookDTO> candidateBooks = new HashSet<>();
+
+        // Chercher par genre
+        for (String genre : favoriteGenres) {
+            log.info("Searching books for genre: {}", genre);
+            List<BookDTO> books = googleBooksService.searchByGenre(genre, 20);
+            log.info("Found {} books for genre: {}", books.size(), genre);
+            candidateBooks.addAll(books);
+        }
+
+        // Chercher par auteur
+        for (String author : favoriteAuthors) {
+            log.info("Searching books for author: {}", author);
+            List<BookDTO> books = googleBooksService.searchByAuthor(author, 20);
+            log.info("Found {} books for author: {}", books.size(), author);
+            candidateBooks.addAll(books);
+        }
+
+        log.info("Total candidate books: {}", candidateBooks.size());
+
+        // 4. Calculer scores et trier
         return candidateBooks.stream()
-                .filter(book -> !readBooksIds.contains(book.getGoogleBookId()))
-                .distinct()
-                .map(book -> {
-                    double score = calculateRecommendationScore(book, preferences, history);
+                .peek(book -> {
+                    double score = calculateRecommendationScore(book, favoriteGenres, favoriteAuthors);
                     book.setRecommendationScore(score);
-                    return book;
+                    log.debug("Book: {} - Score: {}", book.getTitle(), score);
                 })
+                .filter(book -> book.getRecommendationScore() > 0) // Seulement les livres avec score > 0
                 .sorted(Comparator.comparingDouble(BookDTO::getRecommendationScore).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -86,40 +90,54 @@ public class RecommendationService {
 
     private double calculateRecommendationScore(
             BookDTO book,
-            List<Preference> preferences,
-            List<ReadingHistory> history) {
+            List<String> favoriteGenres,
+            List<String> favoriteAuthors) {
 
         double score = 0.0;
 
-        // Score basé sur les genres
-        long genreMatches = preferences.stream()
-                .filter(p -> p.getPreferenceType() == PreferenceType.GENRE)
-                .filter(p -> book.getCategories() != null &&
-                        book.getCategories().contains(p.getPreferenceValue()))
-                .count();
-        score += genreMatches * 50;
+        // Score par genres (COMPARAISON AMÉLIORÉE)
+        if (book.getCategories() != null && !book.getCategories().isEmpty()) {
+            for (String bookCategory : book.getCategories()) {
+                for (String favoriteGenre : favoriteGenres) {
+                    // Comparaison insensible à la casse et partielle
+                    if (bookCategory.toLowerCase().contains(favoriteGenre.toLowerCase()) ||
+                            favoriteGenre.toLowerCase().contains(bookCategory.toLowerCase())) {
+                        score += 50;
+                        log.debug("Genre match: {} ~ {}", bookCategory, favoriteGenre);
+                        break; // Éviter double comptage
+                    }
+                }
+            }
+        }
 
-        // Score basé sur les auteurs
-        long authorMatches = preferences.stream()
-                .filter(p -> p.getPreferenceType() == PreferenceType.AUTHOR)
-                .filter(p -> book.getAuthors() != null &&
-                        book.getAuthors().stream()
-                                .anyMatch(a -> a.contains(p.getPreferenceValue())))
-                .count();
-        score += authorMatches * 30;
+        // Score par auteurs (COMPARAISON AMÉLIORÉE)
+        if (book.getAuthors() != null && !book.getAuthors().isEmpty()) {
+            for (String bookAuthor : book.getAuthors()) {
+                for (String favoriteAuthor : favoriteAuthors) {
+                    // Comparaison insensible à la casse et partielle
+                    if (bookAuthor.toLowerCase().contains(favoriteAuthor.toLowerCase()) ||
+                            favoriteAuthor.toLowerCase().contains(bookAuthor.toLowerCase())) {
+                        score += 30;
+                        log.debug("Author match: {} ~ {}", bookAuthor, favoriteAuthor);
+                        break; // Éviter double comptage
+                    }
+                }
+            }
+        }
 
-        // Score basé sur la note moyenne
+        // Bonus note moyenne
         if (book.getAverageRating() != null) {
             score += book.getAverageRating() * 4;
         }
 
-        // Bonus pour les livres récents
-        if (book.getPublishedDate() != null) {
+        // Bonus livres récents
+        if (book.getPublishedDate() != null && book.getPublishedDate().length() >= 4) {
             try {
                 int year = Integer.parseInt(book.getPublishedDate().substring(0, 4));
                 if (year >= 2020) score += 10;
+                else if (year >= 2015) score += 5;
             } catch (Exception e) {
-                // Ignore parsing errors
+                // Ignore
             }
         }
 
