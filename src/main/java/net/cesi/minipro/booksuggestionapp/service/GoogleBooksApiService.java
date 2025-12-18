@@ -11,9 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +19,8 @@ public class GoogleBooksApiService {
 
     private static final Logger log = LoggerFactory.getLogger(GoogleBooksApiService.class);
 
-    private String apiBaseUrl ="https://www.googleapis.com/books/v1/volumes";
+    @Value("${google.books.api.url}")
+    private String apiBaseUrl;
 
     private final RestTemplate restTemplate;
     private final BookRepository bookRepository;
@@ -33,17 +32,21 @@ public class GoogleBooksApiService {
 
     public List<BookDTO> searchBooks(String query, int maxResults) {
         try {
-            String url = String.format("%s?q=%s&maxResults=%d",
+            // Limiter à 40 (max de Google Books par requête)
+            int resultsToFetch = Math.min(maxResults, 40);
+
+            String url = String.format("%s?q=%s&maxResults=%d&orderBy=relevance",
                     apiBaseUrl,
                     URLEncoder.encode(query, StandardCharsets.UTF_8),
-                    maxResults
+                    resultsToFetch
             );
 
-            log.info("Searching books with query: {}", query);
+            log.info("Calling Google Books API: {}", url);
 
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
             if (response == null || !response.containsKey("items")) {
+                log.warn("No items found for query: {}", query);
                 return new ArrayList<>();
             }
 
@@ -51,6 +54,7 @@ public class GoogleBooksApiService {
 
             return items.stream()
                     .map(this::convertToBookDTO)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
@@ -60,48 +64,98 @@ public class GoogleBooksApiService {
     }
 
     public List<BookDTO> searchByGenre(String genre, int maxResults) {
-        return searchBooks("subject:" + genre, maxResults);
+        // Recherche multiple avec différentes variantes
+        Set<BookDTO> allBooks = new LinkedHashSet<>();
+
+        // Stratégie 1: Subject exact
+        allBooks.addAll(searchBooks("subject:" + genre, maxResults));
+
+        // Stratégie 2: Dans le titre ou description (si pas assez de résultats)
+        if (allBooks.size() < maxResults / 2) {
+            allBooks.addAll(searchBooks(genre + " books", maxResults / 2));
+        }
+
+        // Stratégie 3: Termes similaires
+        List<String> similarTerms = getSimilarGenres(genre);
+        for (String term : similarTerms) {
+            if (allBooks.size() >= maxResults) break;
+            allBooks.addAll(searchBooks("subject:" + term, 10));
+        }
+
+        log.info("Found total {} books for genre: {}", allBooks.size(), genre);
+
+        return new ArrayList<>(allBooks).stream()
+                .limit(maxResults)
+                .collect(Collectors.toList());
     }
 
     public List<BookDTO> searchByAuthor(String author, int maxResults) {
+        // Recherche avec "inauthor" (meilleure que subject)
         return searchBooks("inauthor:" + author, maxResults);
     }
 
+    private List<String> getSimilarGenres(String genre) {
+        Map<String, List<String>> genreVariants = Map.ofEntries(
+                Map.entry("Self-Help", Arrays.asList("Personal Development", "Self Improvement", "Motivational")),
+                Map.entry("Business", Arrays.asList("Business & Economics", "Entrepreneurship", "Management", "Leadership")),
+                Map.entry("Science Fiction", Arrays.asList("Sci-Fi", "Speculative Fiction", "Cyberpunk", "Space Opera")),
+                Map.entry("Fantasy", Arrays.asList("Epic Fantasy", "Urban Fantasy", "Magic", "Wizards")),
+                Map.entry("Mystery", Arrays.asList("Detective", "Crime", "Suspense", "Whodunit")),
+                Map.entry("Thriller", Arrays.asList("Suspense", "Action", "Espionage", "Psychological Thriller")),
+                Map.entry("Romance", Arrays.asList("Love Stories", "Contemporary Romance", "Romantic Comedy")),
+                Map.entry("Horror", Arrays.asList("Scary", "Supernatural", "Gothic")),
+                Map.entry("Biography", Arrays.asList("Memoir", "Autobiography", "Life Stories")),
+                Map.entry("History", Arrays.asList("Historical", "World History", "Ancient History")),
+                Map.entry("Philosophy", Arrays.asList("Ethics", "Logic", "Metaphysics", "Existentialism")),
+                Map.entry("Poetry", Arrays.asList("Poems", "Verse", "Sonnets"))
+        );
+
+        return genreVariants.getOrDefault(genre, new ArrayList<>());
+    }
+
     private BookDTO convertToBookDTO(Map<String, Object> item) {
-        String googleBookId = (String) item.get("id");
-        Map<String, Object> volumeInfo = (Map<String, Object>) item.get("volumeInfo");
+        try {
+            String googleBookId = (String) item.get("id");
+            Map<String, Object> volumeInfo = (Map<String, Object>) item.get("volumeInfo");
 
-        BookDTO dto = BookDTO.builder()
-                .googleBookId(googleBookId)
-                .title((String) volumeInfo.get("title"))
-                .authors((List<String>) volumeInfo.getOrDefault("authors", new ArrayList<>()))
-                .description((String) volumeInfo.get("description"))
-                .categories((List<String>) volumeInfo.getOrDefault("categories", new ArrayList<>()))
-                .publishedDate((String) volumeInfo.get("publishedDate"))
-                .pageCount((Integer) volumeInfo.get("pageCount"))
-                .language((String) volumeInfo.get("language"))
-                .build();
+            if (volumeInfo == null) return null;
 
-        // Thumbnail
-        if (volumeInfo.containsKey("imageLinks")) {
-            Map<String, String> imageLinks = (Map<String, String>) volumeInfo.get("imageLinks");
-            dto.setThumbnailUrl(imageLinks.get("thumbnail"));
-        }
+            BookDTO dto = BookDTO.builder()
+                    .googleBookId(googleBookId)
+                    .title((String) volumeInfo.get("title"))
+                    .authors((List<String>) volumeInfo.getOrDefault("authors", new ArrayList<>()))
+                    .description((String) volumeInfo.get("description"))
+                    .categories((List<String>) volumeInfo.getOrDefault("categories", new ArrayList<>()))
+                    .publishedDate((String) volumeInfo.get("publishedDate"))
+                    .pageCount((Integer) volumeInfo.get("pageCount"))
+                    .language((String) volumeInfo.get("language"))
+                    .build();
 
-        // Rating
-        if (volumeInfo.containsKey("averageRating")) {
-            Object rating = volumeInfo.get("averageRating");
-            if (rating instanceof Integer) {
-                dto.setAverageRating(((Integer) rating).doubleValue());
-            } else if (rating instanceof Double) {
-                dto.setAverageRating((Double) rating);
+            // Thumbnail
+            if (volumeInfo.containsKey("imageLinks")) {
+                Map<String, String> imageLinks = (Map<String, String>) volumeInfo.get("imageLinks");
+                dto.setThumbnailUrl(imageLinks.get("thumbnail"));
             }
+
+            // Rating
+            if (volumeInfo.containsKey("averageRating")) {
+                Object rating = volumeInfo.get("averageRating");
+                if (rating instanceof Integer) {
+                    dto.setAverageRating(((Integer) rating).doubleValue());
+                } else if (rating instanceof Double) {
+                    dto.setAverageRating((Double) rating);
+                }
+            }
+
+            // Cache le livre
+            cacheBookIfNotExists(dto);
+
+            return dto;
+
+        } catch (Exception e) {
+            log.error("Error converting book: {}", e.getMessage());
+            return null;
         }
-
-        // Cache le livre
-        cacheBookIfNotExists(dto);
-
-        return dto;
     }
 
     private void cacheBookIfNotExists(BookDTO dto) {
